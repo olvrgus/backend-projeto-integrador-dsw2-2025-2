@@ -138,13 +138,13 @@ Critérios de aceite:
 | dataAtualizacao | data/hora                     | sim         | 2025-08-20 15:10   |
 
 
-### Chamado
+### Discos
 | Campo           | Tipo               | Obrigatório | Exemplo                 |
 |-----------------|--------------------|-------------|-------------------------|
 | id              | número             | sim         | 2                       |
 | Usuario_id      | número (fk)        | sim         | 8f3a-...                |
-| texto           | texto              | sim         | "Erro ao compilar"      |
-| estado          | char               | sim         | 'a' \| 'f'              |
+| artista         | texto              | sim         | "Travis scott"      |
+| ano             | char               | sim         | 'a' \| 'f'              |
 | dataCriacao     | data/hora          | sim         | 2025-08-20 14:35        |
 | dataAtualizacao | data/hora          | sim         | 2025-08-20 14:50        |
 
