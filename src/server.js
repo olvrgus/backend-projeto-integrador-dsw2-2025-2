@@ -1,11 +1,25 @@
-import express from 'express';
+// server.js
+import express from "express";
+import { pool } from "./db.js";
+
 const app = express();
-app.get("/", (req, res) => {
-    res.send("olá mundo");
+app.use(express.json());
+
+// listar produtos
+app.get("/produtos", async (req, res) => {
+  const result = await pool.query("SELECT * FROM produtos ORDER BY id DESC");
+  res.json(result.rows);
 });
-app.get("/html", (req,res) => {
-    res.send("<h1>teste</h1><p>Parágrafo</p>");
+
+// criar produto
+app.post("/produtos", async (req, res) => {
+  const { nome, preco } = req.body;
+  const result = await pool.query(
+    "INSERT INTO produtos (nome, preco) VALUES ($1, $2) RETURNING *",
+    [nome, preco]
+  );
+  res.json(result.rows[0]);
 });
-app.listen(3000, () => 
-    console.log(`Servidor rodando em http://localhost:3000`)
-);
+
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => console.log(`API rodando em http://localhost:${PORT}`));
