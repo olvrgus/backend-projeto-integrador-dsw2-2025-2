@@ -143,10 +143,16 @@ Critérios de aceite:
 |-----------------|--------------------|-------------|-------------------------|
 | id              | número             | sim         | 2                       |
 | Usuario_id      | número (fk)        | sim         | 8f3a-...                |
-| artista         | texto              | sim         | "Travis scott"      |
-| ano             | char               | sim         | 'a' \| 'f'              |
-| dataCriacao     | data/hora          | sim         | 2025-08-20 14:35        |
-| dataAtualizacao | data/hora          | sim         | 2025-08-20 14:50        |
+| artista         | texto              | sim         | "Travis scott"          |
+| ano             | número             | sim         | 2018                    |
+| gênero          | texto              | sim         | rap                     |
+| álbum           | texto              | sim         | "Astroworld"            |
+| preço           | numérico           | sim         | 200.00                  |
+| urlImage        | texto              | sim         | "/Usuario/capa.png"     |
+| descrição       | texto              | sim         | "......."               |
+| faixas          | texto              | sim         | "1 - ....; 2 - ...."    |
+| dataCriacao     | data/hora          | sim         | 2025-08-20 14:30        |
+| dataAtualizacao | data/hora          | sim         | 2025-08-20 15:10        |
 
 
 ### 9.3 Relações entre entidades
@@ -155,9 +161,4 @@ Critérios de aceite:
      Um Chamado pertence a um Usuario (N→1). -->
 - Um [A] tem muitos [B]. (1→N)
 - Um [B] pertence a um [A]. (N→1)
-
-
-
-
-
 
