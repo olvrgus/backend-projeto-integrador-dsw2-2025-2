@@ -118,11 +118,8 @@ app.get("/api/discos/:id", async (req, res) => {
 app.post("/api/discos", async (req, res) => {
     // Extraímos "usuarios_id", "artista", "genero", "album", "preco", "url_imagem", "descricao", "faixas do corpo". Se req.body for undefined, vira {}.
     const { usuarios_id, artista, genero, album, preco, url_imagem, descricao, faixas } = req.body ?? {};
-
-    // Convertendo "preco" em número. Se falhar, vira NaN.
     const uId = Number(usuarios_id);
     const p = Number(preco);
-    const f = Number(faixas);
 
     // Validações:
     // - !nome → nome ausente, vazio, null, etc. (falsy)
@@ -161,23 +158,41 @@ app.post("/api/discos", async (req, res) => {
 // -----------------------------------------------------------------------------
 // Objetivo: substituir TODOS os campos do produto (put = envia o recurso completo).
 // Requer: { nome, preco } válidos.
-app.put("/discos/:id", async (req, res) => {
-    const id = Number(req.params.id);
-    const { nome, preco } = req.body ?? {};
+app.put("/api/discos/:id", async (req, res) => {
+    const { usuarios_id, artista, genero, album, preco, url_imagem, descricao, faixas } = req.body ?? {};
+    const uId = Number(usuarios_id);
     const p = Number(preco);
 
     if (!Number.isInteger(id) || id <= 0) {
         return res.status(400).json({ erro: "id inválido" });
     }
-    if (!nome || preco == null || Number.isNaN(p) || p < 0) {
-        return res.status(400).json({ erro: "nome e preco (>= 0) obrigatórios" });
+    if (!artista || typeof (artista) !== 'string' ||
+        !genero || typeof (genero) !== 'string' ||
+        !album || typeof (album) !== 'string' ||
+        !faixas || typeof (faixas) !== 'string' ||
+        !url_imagem || typeof (url_imagem) !== 'string' ||
+        !descricao || typeof (descricao) !== 'string' ||
+        usuarios_id == null || Number.isNaN(uId) || uId < 1 ||
+        preco == null || Number.isNaN(p) || p < 1
+    ) {
+        return res.status(400).json({ erro: "usuarios_id, artista, genero, album, preco, url_imagem, descricao, faixas precisam ser do tipo string e não vazios. Usuarios_id e preco precisa ser um número inteiro maior que 0" });
     }
 
     try {
         // Atualiza ambos os campos sempre (sem manter valores antigos).
         const { rows } = await pool.query(
-            "UPDATE discos SET nome = $1, preco = $2 WHERE id = $3 RETURNING *",
-            [nome, p, id]
+            "UPDATE discos SET
+            usuarios_id = $1,
+            artista = $2 
+            genero = $3
+            album = $4
+            preco = $5
+            url_imagem = $6
+            descricao = $7
+            faixas = $8
+            WHERE id = $9 
+            RETURNING *",
+            [usuarios_id, artista, genero, album, preco, url_imagem, descricao, faixas, preco, id]
         );
 
         // Se não atualizou nenhuma linha, o id não existia.
