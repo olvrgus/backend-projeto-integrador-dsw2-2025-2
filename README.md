@@ -162,3 +162,12 @@ Critérios de aceite:
 - Um [A] tem muitos [B]. (1→N)
 - Um [B] pertence a um [A]. (N→1)
 
+{ "usuarios_id": 1, 
+  "artista": "a", 
+  "genero": "a", 
+  "album": "a", 
+  "preco": 1, 
+  "url_imagem": "a", 
+  "descricao": "a", 
+  "faixas": "1 - a; 2 - b; 3 - c"
+}
