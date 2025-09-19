@@ -159,6 +159,7 @@ app.post("/api/discos", async (req, res) => {
 // Objetivo: substituir TODOS os campos do produto (put = envia o recurso completo).
 // Requer: { nome, preco } válidos.
 app.put("/api/discos/:id", async (req, res) => {
+    const id = Number(req.params.id);
     const { usuarios_id, artista, genero, album, preco, url_imagem, descricao, faixas } = req.body ?? {};
     const uId = Number(usuarios_id);
     const p = Number(preco);
@@ -181,26 +182,25 @@ app.put("/api/discos/:id", async (req, res) => {
     try {
         // Atualiza ambos os campos sempre (sem manter valores antigos).
         const { rows } = await pool.query(
-            "UPDATE discos SET
-            usuarios_id = $1,
-            artista = $2 
-            genero = $3
-            album = $4
-            preco = $5
-            url_imagem = $6
-            descricao = $7
-            faixas = $8
-            WHERE id = $9 
-            RETURNING *",
-            [usuarios_id, artista, genero, album, preco, url_imagem, descricao, faixas, preco, id]
-        );
-
+            `UPDATE discos SET
+              usuarios_id = $1,
+              artista = $2, 
+              genero = $3,
+              album = $4,
+              preco = $5,
+              url_imagem = $6,
+              descricao = $7,
+              faixas = $8
+            WHERE id = $9
+            RETURNING *`,
+            [usuarios_id, artista, genero, album, preco, url_imagem, descricao, faixas, id]
+        );                                                                                                                                                                                                                                                                                                    
         // Se não atualizou nenhuma linha, o id não existia.
         if (!rows[0]) return res.status(404).json({ erro: "não encontrado" });
 
         res.json(rows[0]); // retorna o produto atualizado
-    } catch {
-        res.status(500).json({ erro: "erro interno" });
+    } catch(error) {
+        res.status(500).json({ erro: error });
     }
 });
 
@@ -214,40 +214,62 @@ app.put("/api/discos/:id", async (req, res) => {
 // Como fazemos isso no SQL?
 // - COALESCE(a, b) devolve "a" quando "a" NÃO é NULL; caso seja NULL, devolve "b".
 // - Então passamos "null" para campos não enviados, e o COALESCE usa o valor atual do banco.
-app.patch("/discos/:id", async (req, res) => {
+app.patch("/api/discos/:id", async (req, res) => {
     const id = Number(req.params.id);
-    const { nome, preco } = req.body ?? {};
-
+    const { usuarios_id, artista, genero, album, preco, url_imagem, descricao, faixas } = req.body ?? {};
     // Validação do id
     if (!Number.isInteger(id) || id <= 0) {
         return res.status(400).json({ erro: "id inválido" });
     }
 
     // Se nenhum campo foi enviado, não há o que atualizar.
-    if (nome === undefined && preco === undefined) {
-        return res.status(400).json({ erro: "envie nome e/ou preco" });
+    if (preco === undefined &&
+        usuarios_id === undefined &&
+        artista === undefined &&
+        genero === undefined &&
+        album === undefined &&
+        preco  === undefined &&
+        url_imagem  === undefined &&
+        descricao === undefined &&
+        faixas === undefined 
+        ) {
+        return res.status(400).json({ erro: "É necessário enviar pelo menos um dado para atualizar" });
     }
 
-    // Validamos "preco" somente se ele foi enviado.
-    // Se não foi enviado, manteremos "p = null" para avisar o COALESCE a não mexer no preço.
+    let uId = null;
+    if (usuarios_id !== undefined) {
+        uId = Number(usuarios_id);
+        if (Number.isNaN(uId) || uId < 1) {
+            return res.status(400).json({ erro: "Usuario deve ser maior que o 1" });
+        }
+    }
     let p = null;
     if (preco !== undefined) {
         p = Number(preco);
-        if (Number.isNaN(p) || p < 0) {
-            return res.status(400).json({ erro: "preco deve ser número >= 0" });
+        if (Number.isNaN(uId) || uId < 1) {
+            return res.status(400).json({ erro: "Usuario deve ser maior que o 1" });
         }
     }
 
     try {
-        // Para "nome": se não veio (undefined), usamos nome ?? null → null
-        // No SQL: COALESCE($1, nome) manterá o valor antigo quando $1 for NULL.
-        const { rows } = await pool.query(
-            "UPDATE discos SET nome = COALESCE($1, nome), preco = COALESCE($2, preco) WHERE id = $3 RETURNING *",
-            [nome ?? null, p, id]
-        );
+    const { rows } = await pool.query(
 
-        if (!rows[0]) return res.status(404).json({ erro: "não encontrado" });
-        res.json(rows[0]);
+     `UPDATE discos SET 
+     usuarios_id = coalesce($1, usuarios_id), 
+     artista = coalesce($2, usuarios_id), 
+     genero = coalesce($3, usuarios_id), 
+     album = coalesce($4, usuarios_id),
+     preco = coalesce($5, usuarios_id),
+     url_imagem = coalesce($6, usuarios_id),
+     descricao = coalesce($7, usuarios_id),
+     faixas = coalesce($8, usuarios_id)
+     WHERE id = $9 RETURNING *`,
+     [usuarios_id ?? null, artista ?? null, genero ?? null, album ?? null, preco ?? null, url_imagem ?? null, descricao ?? null, faixas ?? null, id]
+    );
+
+    if (!rows[0]) return res.status(404).json({ erro: "não encontrado" });
+    res.json(rows[0]);
+
     } catch {
         res.status(500).json({ erro: "erro interno" });
     }
@@ -258,7 +280,7 @@ app.patch("/discos/:id", async (req, res) => {
 // -----------------------------------------------------------------------------
 // Objetivo: remover um produto existente.
 // Retornamos 204 No Content quando dá certo (sem corpo na resposta).
-app.delete("/discos/:id", async (req, res) => {
+app.delete("/api/discos/:id", async (req, res) => {
     const id = Number(req.params.id);
 
     if (!Number.isInteger(id) || id <= 0) {
