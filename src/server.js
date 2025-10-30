@@ -70,7 +70,7 @@ app.get("/", async (_req, res) => {
 app.get("/api/discos", async (_req, res) => {
     try {
         // Desestruturação: extraímos apenas "rows" do objeto retornado.
-        const { rows } = await pool.query("SELECT * FROM discos ORDER BY id DESC");
+        const { rows } = await pool.query(`SELECT * FROM "discos" ORDER BY "id" DESC`);
         res.json(rows); // retorna um array de objetos (cada objeto é um produto)
     } catch {
         res.status(500).json({ erro: "erro interno" });
@@ -95,7 +95,7 @@ app.get("/api/discos/:id", async (req, res) => {
 
     try {
         // Consulta parametrizada: $1 será substituído pelo valor de "id".
-        const result = await pool.query("SELECT * FROM discos WHERE id = $1", [id]);
+        const result = await pool.query(`SELECT * FROM "discos" WHERE "id" = $1`, [id]);
 
         // "rows" é um array de linhas. Se não houver primeira linha, não achou.
         const { rows } = result;
@@ -142,7 +142,7 @@ app.post("/api/discos", async (req, res) => {
     try {
         // INSERT com retorno: RETURNING * devolve a linha criada.
         const { rows } = await pool.query(
-            "INSERT INTO discos (usuarios_id, artista, genero, album, preco, url_imagem, descricao, faixas) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *",
+            `INSERT INTO discos (usuarios_id, artista, genero, album, preco, url_imagem, descricao, faixas) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *`,
             [usuarios_id, artista, genero, album, preco, url_imagem, descricao, faixas]
         );
 

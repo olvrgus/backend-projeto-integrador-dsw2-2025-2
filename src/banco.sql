@@ -1,37 +1,37 @@
 -- Remover tabelas existentes para evitar erros de "já existe"
 -- A ordem é importante devido à chave estrangeira
-DROP TABLE IF EXISTS discos;
-DROP TABLE IF EXISTS usuarios;
+DROP TABLE IF EXISTS "discos";
+DROP TABLE IF EXISTS "usuarios";
 
 -- USUARIOS
 -- Recriar as tabelas com a mesma estrutura
-CREATE TABLE usuarios (
-    id SERIAL PRIMARY KEY,
-    nome VARCHAR(255) NOT NULL,
-    email VARCHAR(255) NOT NULL UNIQUE,
-    senha_hash VARCHAR(255) NOT NULL,
-    papel SMALLINT NOT NULL CHECK (papel IN (0,1)),
-    data_criacao TIMESTAMP DEFAULT NOW(),
-    data_atualizacao TIMESTAMP DEFAULT NOW()
+CREATE TABLE "usuarios" (
+    "id" SERIAL PRIMARY KEY,
+    "nome" VARCHAR(255) NOT NULL,
+    "email" VARCHAR(255) NOT NULL UNIQUE,
+    "senha_hash" VARCHAR(255) NOT NULL,
+    "papel" SMALLINT NOT NULL CHECK ("papel" IN (0,1)),
+    "data_criacao" TIMESTAMP DEFAULT NOW(),
+    "data_atualizacao" TIMESTAMP DEFAULT NOW()
 );
 
 -- DISCOS
-CREATE TABLE discos (
-    id SERIAL PRIMARY KEY,
-    usuarios_id INTEGER NOT NULL REFERENCES usuarios(id),
-    artista VARCHAR(255) NOT NULL,
-    genero VARCHAR(255) NOT NULL,
-    album VARCHAR(255) NOT NULL,
-    preco DECIMAL(10, 2) NOT NULL,
-    url_imagem VARCHAR(255),
-    descricao TEXT NOT NULL,
-    faixas TEXT NOT NULL,
-    data_criacao TIMESTAMP NOT NULL DEFAULT NOW(),
-    data_atualizacao TIMESTAMP NOT NULL DEFAULT NOW()
+CREATE TABLE "discos" (
+    "id" SERIAL PRIMARY KEY,
+    "usuarios_id" INTEGER NOT NULL REFERENCES "usuarios"("id"),
+    "artista" VARCHAR(255) NOT NULL,
+    "genero" VARCHAR(255) NOT NULL,
+    "album" VARCHAR(255) NOT NULL,
+    "preco" DECIMAL(10, 2) NOT NULL,
+    "url_imagem" VARCHAR(255),
+    "descricao" TEXT NOT NULL,
+    "faixas" TEXT NOT NULL,
+    "data_criacao" TIMESTAMP NOT NULL DEFAULT NOW(),
+    "data_atualizacao" TIMESTAMP NOT NULL DEFAULT NOW()
 );
 
 -- Inserir dados de exemplo na tabela 'usuarios'
-INSERT INTO usuarios (nome, email, senha_hash, papel) VALUES
+INSERT INTO "usuarios" ("nome", "email", "senha_hash", "papel") VALUES
 ('Ana Souza', 'ana@exemplo.com', '$2a$10$Abcdefghi.Jklmnopqrstuvwxyz1234567890', 0),
 ('Carlos Rodrigues', 'carlos@exemplo.com', '$2a$10$Abcdefghi.Jklmnopqrstuvwxyz1234567890', 1),
 ('Mariana Lima', 'mariana@exemplo.com', '$2a$10$Abcdefghi.Jklmnopqrstuvwxyz1234567890', 0),
@@ -39,7 +39,7 @@ INSERT INTO usuarios (nome, email, senha_hash, papel) VALUES
 ('Fulano de Tal', 'fulano@exemplo.com', '$2a$10$Abcdefghi.Jklmnopqrstuvwxyz1234567890', 0);
 
 -- Inserir dados de exemplo na tabela 'discos'
-INSERT INTO discos (usuarios_id, artista, genero, album, preco, url_imagem, descricao, faixas) VALUES
+INSERT INTO "discos" ("usuarios_id", "artista", "genero", "album", "preco", "url_imagem", "descricao", "faixas") VALUES
 (1, 'Fulano', 'Sapecada', 'Gaúcho Raiz', 50.50, '/Usuario_1/capa.png', 'Um álbum de música gaúcha com o melhor da sapecada.', '1 - O Gauchinho; 2 - Alma do Pampa; 3 - De Campo e Pouso'),
 (2, 'Artista A', 'Rock', 'Álbum de Rock', 75.00, '/Usuario_2/rock_capa.png', 'Um clássico do rock', '1 - Faixa Rock 1; 2 - Faixa Rock 2'),
 (2, 'Artista B', 'Pop', 'Pop Sensação', 60.00, '/Usuario_2/pop_capa.png', 'Hits que não saem da cabeça', '1 - Hit 1; 2 - Hit 2; 3 - Hit 3'),
