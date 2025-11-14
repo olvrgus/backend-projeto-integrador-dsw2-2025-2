@@ -1,11 +1,11 @@
 -- Remover tabelas existentes para evitar erros de "já existe"
 -- A ordem é importante devido à chave estrangeira
 DROP TABLE IF EXISTS "discos";
-DROP TABLE IF EXISTS "usuarios";
+DROP TABLE IF EXISTS "Usuarios";
 
 -- USUARIOS
 -- Recriar as tabelas com a mesma estrutura
-CREATE TABLE "usuarios" (
+CREATE TABLE "Usuarios" (
     "id" SERIAL PRIMARY KEY,
     "nome" VARCHAR(255) NOT NULL,
     "email" VARCHAR(255) NOT NULL UNIQUE,
@@ -18,7 +18,7 @@ CREATE TABLE "usuarios" (
 -- DISCOS
 CREATE TABLE "discos" (
     "id" SERIAL PRIMARY KEY,
-    "usuarios_id" INTEGER NOT NULL REFERENCES "usuarios"("id"),
+    "usuarios_id" INTEGER NOT NULL REFERENCES "Usuarios"("id"),
     "artista" VARCHAR(255) NOT NULL,
     "genero" VARCHAR(255) NOT NULL,
     "album" VARCHAR(255) NOT NULL,
@@ -31,7 +31,7 @@ CREATE TABLE "discos" (
 );
 
 -- Inserir dados de exemplo na tabela 'usuarios'
-INSERT INTO "usuarios" ("nome", "email", "senha_hash", "papel") VALUES
+INSERT INTO "Usuarios" ("nome", "email", "senha_hash", "papel") VALUES
 ('Ana Souza', 'ana@exemplo.com', '$2a$10$Abcdefghi.Jklmnopqrstuvwxyz1234567890', 0),
 ('Carlos Rodrigues', 'carlos@exemplo.com', '$2a$10$Abcdefghi.Jklmnopqrstuvwxyz1234567890', 1),
 ('Mariana Lima', 'mariana@exemplo.com', '$2a$10$Abcdefghi.Jklmnopqrstuvwxyz1234567890', 0),
